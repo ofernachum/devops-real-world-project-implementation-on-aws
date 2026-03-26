@@ -95,6 +95,7 @@ docker compose -f docker-compose.yaml up
 docker compose up 
 
 # OR start in detached mode (background)
+# Without -d it will run in foreground and you can see logs in terminal:
 docker compose -f docker-compose.yaml up -d
 docker compose up -d
 
