@@ -136,6 +136,8 @@ docker compose stop orders
 
 # Verify if service is stopped
 docker compose ps
+
+# This will show stopped services as well:
 docker compose ps -a
 
 # Start a Service
@@ -163,7 +165,7 @@ docker compose logs
 # Logs for a specific service
 docker compose logs checkout
 
-# Follow logs
+# Follow logs - continuously stream new log output (like tail -f)
 docker compose logs -f checkout
 ```
 
@@ -251,7 +253,7 @@ exit
 
 ### Step-11-04: Force recreate UI Container
 ```bash
-# Stop All Services
+# This is useful when you want to apply changes to environment variables or other configurations that require container restart. It will stop and remove the existing container and create a new one with the updated configuration:
 docker compose up -d --force-recreate ui
 
 [or]
