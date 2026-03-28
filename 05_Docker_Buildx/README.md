@@ -85,6 +85,7 @@ docker buildx create --name multiarch --driver docker-container --use
 docker buildx inspect --bootstrap
 
 # List Buildx Builders
+# Output should show multiarch builder with "Platforms: linux/amd64, linux/arm64" (e.g. multiarch0 in the sample output below)
 docker buildx ls
 
 ```

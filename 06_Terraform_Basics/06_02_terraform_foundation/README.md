@@ -106,8 +106,26 @@ terraform validate
 # See execution plan
 terraform plan
 
+# Exporting the plan to a file (optional, but good for CI/CD pipelines)
+terraform plan -out=tfplan
+
+# To apply from the plan file:
+terraform apply tfplan
+
+# To show the plan file in human-readable format:
+terraform show tfplan
+
+# Convert to JSON format (optional, for advanced use cases):
+terraform show -json tfplan > tfplan.json
+
+
 # Create resources
 terraform apply -auto-approve
+
+# Check only outputs:
+
+terraform output
+
 
 # Check Output
 # You should see the bucket name like:
