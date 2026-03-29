@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 variable "tags" {
   description = "Global tags to apply to all resources"
   type        = map(string)
-  default     = {
+  default = {
     Terraform = "true"
   }
 }
@@ -29,3 +29,5 @@ variable "subnet_newbits" {
   type        = number
   default     = 8
 }
+
+

@@ -14,6 +14,8 @@ output "private_subnet_ids" {
   description = "List of private subnet IDs"
 }
 
+
+# This will generate outpu like: { "us-east-1a" => "subnet-12345678", "us-east-1b" => "subnet-87654321" }
 output "public_subnet_map" {
   value       = { for az, subnet in aws_subnet.public : az => subnet.id }
   description = "Map of AZ to Public Subnet ID"
