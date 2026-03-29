@@ -15,6 +15,10 @@
 - `terraform validate` - Validates the Terraform configuration files for syntax and internal consistency, ensuring they are well-formed before applying.
 - `terraform show` - Displays the current state of the infrastructure or the execution plan in a human-readable format.
 - `terraform state` - Manages the Terraform state file, allowing you to view, modify, or remove resources from the state.
+    - `terraform state list` - Lists all resources in the state file.
+    - `terraform state show <resource>` - Shows detailed information about a specific resource in the state file.
+    - `terraform state rm <resource>` - Removes a resource from the state file, without destroying the actual resource in the infrastructure.   
+    
 - `terraform import` - Imports existing infrastructure resources into Terraform's state, allowing you to manage them with Terraform going forward.
 - `terraform output` - Displays the output values defined in the Terraform configuration, which can be used for referencing in other configurations or scripts.         
 

@@ -11,6 +11,7 @@
 
 ![Terraform Variable Precedence](../../images/06-04-Terraform-Variable-Precedence.png)
 
+- Note: **Highre precedence sources override lower ones !**
 ---
 
 ## Step-02: Default Values from c2-variables.tf

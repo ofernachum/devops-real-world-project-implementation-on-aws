@@ -38,6 +38,14 @@ terraform apply
 
 ---
 
+## Implementation Steps:
+
+To switch from loacl state to remote state, you will need to:
+1. Create the S3 bucket resource and apply the configuration to provision it from local state.
+2. Update your main Terraform projects to reference the new S3 backend for state management (see sample configuration below).
+3. Run `terraform init` in your main projects to migrate state to the new backend.
+4. Continue using Terraform as usual, with the state now stored remotely in S3.
+
 ## Sample Backend Configuration (for other Terraform projects)
 
 Once this backend is created, use the following block in your main projects to store state remotely:
