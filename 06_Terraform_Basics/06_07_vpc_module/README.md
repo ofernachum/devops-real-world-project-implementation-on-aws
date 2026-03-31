@@ -6,6 +6,14 @@ This project demonstrates how to convert a basic VPC configuration into a **reus
 
 ---
 
+## Resources:
+
+- [Terraform Regstry - Community Opensource Reusable Modules](https://registry.terraform.io/browse/modules)
+    - **IMPORTANT: Do not use opensource modules directly from the registry in production. Always download and review the module code, then copy it into your own repository to maintain control and security!**
+    - **Always lock to specific version !**
+
+---
+
 ## Step-01: Project Structure
 
 ```
