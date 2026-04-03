@@ -8,11 +8,36 @@ We build the cluster step by step, covering IAM roles, networking, node groups, 
 ## Kubernetes Architecture
 ![Kubernetes Architecture](../images/07_01_EKS_Cluster.png)
 
----
+
+### Notes:
+- **Master Node:**
+  - **etcd** - The cluster Database. Used to store all cluster data, including the state of the cluster, configuration, and metadata.
+  - **kube-apiserver** - The API server is the front-end for the Kubernetes control plane.
+  - **kube-scheduler** - The scheduler is responsible for scheduling pods to run on worker nodes based on resource availability and other constraints.
+  - **kube-controller-manager** - Responsible for running various controllers that manage the state of the cluster, such as the replication controller, which ensures that the desired number of replicas of a pod are running at all times.
+  - **cloud-controller-manager** - The cloud controller manager is responsible for managing cloud-specific resources, such as load balancers and storage volumes.
+    - **node lifecycle controller** - Responsible for managing the lifecycle of nodes in the cluster, including adding and removing nodes as needed.
+    - **route controller** - Responsible for managing network routes in the cluster, ensuring that traffic is properly routed to the correct nodes and pods.
+    - **service controller** - Responsible for managing Kubernetes services, which provide a stable IP address and DNS name for a set of pods. The service controller ensures that services are properly configured and that traffic is routed to the correct pods.
+    - **volume controller** - Responsible for managing storage volumes in the cluster, ensuring that they are properly provisioned and attached to the correct nodes and pods.
+- **Worker Node:**
+  - **kubelet** - The kubelet is an agent that runs on each worker node and is responsible for managing the lifecycle of pods on that node. It communicates with the API server to receive instructions on which pods to run and monitors the health of those pods.
+  - **kube-proxy** - The kube-proxy is responsible for managing network traffic to and from pods on the worker node. It ensures that traffic is properly routed to the correct pods and that network policies are enforced.
+  - **Container Runtime** - The container runtime is responsible for running containers on the worker node.
 
 ## AWS EKS Cluster Architecture
 ![AWS EKS Cluster Architecture](../images/07_02_EKS_Cluster.png)
 
+### Notes:
+
+  - **Control Plane** - The control plane is managed by AWS and includes the Kubernetes API server, etcd, and other components. It is responsible for managing the overall state of the cluster and ensuring that the desired state is maintained.
+    - **kubectl cli** - The kubectl command-line tool is used to interact with the Kubernetes API server and manage the cluster.
+  - **VPC** - The EKS cluster is deployed within a VPC, which provides network isolation and security for the cluster.
+  - **NAT Gateway** - The NAT gateway allows worker nodes in private subnets to access the internet for updates and other necessary communications while keeping them secure from direct internet exposure. 
+  - **Subnets** - The cluster is deployed across multiple subnets for high availability:
+    - **Public Subnets** - Used for load balancers and other resources that need to be accessible from the internet.
+    - **Private Subnets** - Used for worker nodes and other resources that do not need to be directly accessible from the internet. 
+  - **Worker Nodes** - The worker nodes are EC2 instances that run the Kubernetes workloads. Created in private subnets for better security.
 ---
 
 ## Terraform Remote State Datasource for VPC and EKS Cluster Terraform Projects 
