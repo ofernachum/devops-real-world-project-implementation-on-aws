@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------------------
 # IAM Role for EKS Managed Node Group (EC2 Worker Nodes)
-# This role will be assumed by EC2 instances launched in the node group
+# This role will be assumed by EC2 instances launched in the node group and will allow
+# the EC2 instances to interact with the EKS control plane and other AWS services as needed.
 # ------------------------------------------------------------------------------
 resource "aws_iam_role" "eks_nodegroup_role" {
   # IAM role name following environment and division-based naming
@@ -10,10 +11,10 @@ resource "aws_iam_role" "eks_nodegroup_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Action    = "sts:AssumeRole",
-      Effect    = "Allow",
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
       Principal = {
-        Service = "ec2.amazonaws.com"
+        Service = "ec2.amazonaws.com" # Only allow EC2 instances to assume this role !
       }
     }]
   })

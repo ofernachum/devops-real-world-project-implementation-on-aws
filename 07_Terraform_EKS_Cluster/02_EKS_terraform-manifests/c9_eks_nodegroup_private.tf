@@ -13,7 +13,7 @@ resource "aws_eks_node_group" "private_nodes" {
   # Subnets where the worker nodes will be launched (typically private subnets)
   subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnet_ids
 
-  # Instance types for the nodes (e.g., t3.medium, m5.large)
+  # Instance types for the nodes (e.g., t3.medium, m5.large) as defined in tfvars:
   instance_types = var.node_instance_types
 
   # Choose between ON_DEMAND or SPOT capacity types
@@ -39,7 +39,10 @@ resource "aws_eks_node_group" "private_nodes" {
     max_size = 6
   }
 
-  # Set the max percentage of nodes that can be unavailable during update
+  # Set the max percentage of nodes that can be unavailable during update.
+  # This ensures that at least 67% of the nodes remain available while updates are applied, minimizing downtime.
+  # While updates include changes to the node group configuration, such as instance type changes or scaling adjustments.
+
   update_config {
     max_unavailable_percentage = 33
   }
@@ -48,6 +51,7 @@ resource "aws_eks_node_group" "private_nodes" {
   force_update_version = true
 
   # Apply labels to each EC2 instance for easier scheduling and management in Kubernetes
+  # These labels can be used for node selection, organization, and filtering within the cluster.
   labels = {
     "env"  = var.environment_name
     "team" = var.business_division
