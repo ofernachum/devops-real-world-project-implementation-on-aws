@@ -19,6 +19,24 @@ This marks the beginning of our Kubernetes journey — starting simple, focusing
 
 ---
 
+### What is a Pod?
+
+A **Pod** is the smallest deployable unit in Kubernetes which holds:
+  - Containers (one or more)
+  - Storage volumes (optional)
+  - Network (shared IP and ports)
+
+### Best Practices for Pods:
+  - Run a single container per Pod for the main application (except for sidecars and helper containers)
+    - Sidecars and helper containers, include logging agents, monitoring agents, or proxies.
+    - Shared network and storage between containers in the same Pod allows them to work together closely.
+  - Use resource requests and limits to manage CPU/memory
+  - Implement readiness/liveness probes for health checks
+
+
+
+
+
 ## Step-01: Review the Pod Manifest
 
 **File:** `01_catalog_pod.yaml`

@@ -1,29 +1,33 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: catalog-pod
-  labels:
-    app: catalog
-spec:
-  containers:
+
+apiVersion: v1 # This is the API version for the Pod resource
+kind: Pod # This specifies that we are creating a Pod resource
+
+metadata: # Metadata contains information about the Pod, such as its name and labels
+  name: catalog-pod # This is the name of the Pod
+  labels: # Labels are key-value pairs that can be used to organize and select resources
+    app: catalog # This label indicates that this Pod is part of the "catalog" application
+spec: # What the Pod will actually run is defined in the spec section:
+  containers: # List Item - This is a list of containers that will run in the Pod. In this case, we have one container.
     - name: catalog
-      image: "public.ecr.aws/aws-containers/retail-store-sample-catalog:1.3.0"
+      image: "public.ecr.aws/aws-containers/retail-store-sample-catalog:1.3.0" # This is the Docker image that will be used for the container.
       ports:
-        - name: http
-          containerPort: 8080
-          protocol: TCP
+        - name: http # This is the name of the port, which can be used to reference it in other parts of the configuration
+          containerPort: 8080 # This is the port that the container will listen on for HTTP traffic
+          protocol: TCP # This specifies that the protocol used for this port is TCP
       resources:
-        limits:   
-          cpu: "200m"
-          memory: "256Mi"
-        requests: 
-          cpu: "100m"
-          memory: "128Mi" 
-      readinessProbe:
-        httpGet:
-          path: /health
-          #path: /topology
-          port: 8080
+        limits: # Maximum amount of resources that the container can use. If the container tries to use more than these limits, it may be terminated or throttled.
+          cpu: "200m" # 20% of a CPU core
+          memory: "256Mi" # 256 MiB of memory
+        requests: # Minimum amount of resources required for the container to run. If the node does not have enough resources to meet these requests, the Pod will not be scheduled.
+          cpu: "100m" # 10% of a CPU core
+          memory: "128Mi" # 128 MiB of memory
+      readinessProbe: # This is a probe that Kubernetes uses to determine if the container is ready to accept traffic. If the readiness probe fails, the container will not receive traffic from the Service.
+        httpGet: # This specifies that the probe will use an HTTP GET request to check the health of the container
+          path: /health # This is the path that the probe will request to check the health of the container
+          port: 8080 # This is the port that the probe will use to check the health of the container
+
+
+          
 
 
 
