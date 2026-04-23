@@ -16,7 +16,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: catalog
-      app.kubernetes.io/instance: catalog
+      app.kubernetes.io/instance: catalog # The selector matches the labels defined in the pod template. This is how the Deployment identifies which pods to manage.  
       app.kubernetes.io/component: service
       app.kubernetes.io/owner: retail-store-sample    
   template:

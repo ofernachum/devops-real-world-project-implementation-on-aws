@@ -3,43 +3,43 @@ kind: Deployment
 metadata:
   name: catalog
   labels:
-    app.kubernetes.io/name: catalog
-spec:
-  replicas: 1
-  strategy:
-    rollingUpdate:
-      maxUnavailable: 1
-    type: RollingUpdate
-  selector:
+    app.kubernetes.io/name: catalog # This label is used by the service to select the pods
+spec: # This is the Deployment specifications:
+  replicas: 1 # This is the number of desired pods.
+  strategy: 
+    rollingUpdate: # This is the rolling update strategy specifications:
+      maxUnavailable: 1 # Make sure that only 1 pod is unavailable at any given time during the update process.
+    type: RollingUpdate # Use rolling update strategy to update the pods without downtime !
+  selector: # This tells the deployment which pods to manage. It should match the labels of the pods defined in the template section.
     matchLabels:
-      app.kubernetes.io/name: catalog
-  template:
+      app.kubernetes.io/name: catalog # This should match the label defined in the template section to ensure that the deployment manages the correct pods.
+  template: # Defines the blueprint for the pods that will be created by this deployment.
     metadata:
       labels:
-        app.kubernetes.io/name: catalog
-    spec:
+        app.kubernetes.io/name: catalog # This should match the label defined in the selector section to ensure that the deployment manages the correct pods.
+    spec: # This is the Pod specifications:
       securityContext:
-        fsGroup: 1000
+        fsGroup: 1000 # This ensures that the pod's file system is owned by a non-root user with GID 1000, enhancing security.
       containers:
-        - name: catalog
+        - name: catalog # Container name, used for identification and logging purposes.
           securityContext:
             capabilities:
               drop:
-              - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1000
+              - ALL # This drops all Linux capabilities from the container, reducing the attack surface. run as non-root user with UID 1000 and GID 1000, and ensures that the container's file system is read-only, further enhancing security.  
+            readOnlyRootFilesystem: true # Root file system is read-only, preventing any modifications to the container's file system at runtime, which enhances security.  
+            runAsNonRoot: true # This ensures that the container runs as a non-root user, which is a security best practice.
+            runAsUser: 1000 # This sets the user ID to 1000, which should correspond to a non-root user in the container image.
           image: "public.ecr.aws/aws-containers/retail-store-sample-catalog:1.0.0"
-          imagePullPolicy: IfNotPresent
-          ports:
+          imagePullPolicy: IfNotPresent # This tells Kubernetes to pull the image only if it is not already present on the node, which can speed up pod startup times if the image is already cached. 
+          ports: 
             - name: http
-              containerPort: 8080
+              containerPort: 8080 # Container port that the application listens on. This should match the port defined in the service that exposes this deployment.
               protocol: TCP
-          readinessProbe:
+          readinessProbe: # Initial health check to determine if the application is ready to receive traffic. If the readiness probe fails, the pod will not receive traffic until it passes. 
             httpGet:
               path: /health
               port: 8080
-          livenessProbe:
+          livenessProbe: # Ongoing health check to ensure the application is running and healthy. If the liveness probe fails, Kubernetes will restart the container. 
             httpGet:
               path: /health
               port: 8080                 

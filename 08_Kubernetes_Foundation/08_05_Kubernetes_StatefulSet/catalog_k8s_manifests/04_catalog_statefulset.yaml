@@ -1,16 +1,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: catalog-mysql
-  labels:
+  name: catalog-mysql # Name of the StatefulSet
+  labels: # Labels to identify the StatefulSet and its components. used for selection and organization of resources.
     app.kubernetes.io/name: catalog
     app.kubernetes.io/instance: catalog
     app.kubernetes.io/component: mysql
     app.kubernetes.io/owner: retail-store-sample
 spec:
   replicas: 1
-  serviceName: catalog-mysql
-  selector:
+
+  # Name of the headless service that governs this StatefulSet. It is used to control the network identity of the pods.
+  # This is required for StatefulSets to provide stable network identities to the pods. 
+  #The headless service must be created separately and should have the same name as specified here:
+  
+  serviceName: catalog-mysql 
+  selector: # Selector to identify the pods managed by this StatefulSet. It matches the labels defined in the pod template !
     matchLabels:
       app.kubernetes.io/name: catalog
       app.kubernetes.io/instance: catalog

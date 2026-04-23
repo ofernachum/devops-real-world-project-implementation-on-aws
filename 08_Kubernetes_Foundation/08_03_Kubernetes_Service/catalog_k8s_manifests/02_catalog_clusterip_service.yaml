@@ -2,15 +2,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: catalog-service
-  labels:
+  labels: # This is for used for filtering, debuging and grouping (dashboards) , it is not used for routing traffic to the pods. The selector field in the spec is used for that purpose.
     app.kubernetes.io/name: catalog
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/name: catalog
+    app.kubernetes.io/name: catalog # This selector matches the selector match label in the catalog deployment to allow the service to route traffic to the catalog pods.
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 8080 # Service port that will be exposed within the cluster, this is the port that other pods will use to access the service. It can be different from the targetPort. In this case, we are using the same port number for simplicity.
+      targetPort: 8080 # Container port to which the service will route traffic, this should match the containerPort defined in the catalog deployment.
       protocol: TCP
 

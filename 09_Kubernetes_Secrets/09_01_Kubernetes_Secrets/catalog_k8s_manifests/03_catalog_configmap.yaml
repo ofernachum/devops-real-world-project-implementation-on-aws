@@ -7,6 +7,11 @@ data:
   #RETAIL_CATALOG_PERSISTENCE_ENDPOINT: "catalog-mysql:3306"
   RETAIL_CATALOG_PERSISTENCE_ENDPOINT: "catalog-mysql-0.catalog-mysql.default.svc.cluster.local:3306"   
   RETAIL_CATALOG_PERSISTENCE_DB_NAME: "catalogdb"
+
+  ##############################################################################
+  # The following configuration parameters will be moved to Kubernetes Secrets: 
   #RETAIL_CATALOG_PERSISTENCE_USER: "catalog_user"
   #RETAIL_CATALOG_PERSISTENCE_PASSWORD: "kalyandb101"
+  ##############################################################################
+
   RETAIL_CATALOG_PERSISTENCE_CONNECT_TIMEOUT: "5"

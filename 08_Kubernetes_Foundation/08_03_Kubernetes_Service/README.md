@@ -13,6 +13,13 @@ Ensure 3 replicas are running.
 
 ### **Step-02: Create ClusterIP Service**
 
+Notes:
+- **ClusterIP** is the default service type that exposes the service on an internal IP in the cluster.
+- It allows communication between pods and services within the cluster but is not accessible from outside.
+
+
+
+
 **File:** `02_catalog_clusterip_service.yaml`
 
 ```yaml
@@ -53,6 +60,10 @@ Highlight output:
 ---
 
 ### **Step-04: Inspect EndpointSlices and Pod Matching**
+
+Note: Endpoint Slices are a newer Kubernetes resource that provides a scalable way to track network endpoints (pods) for services. Each EndpointSlice contains a subset of the endpoints for a service, and Kubernetes automatically creates and updates these as pods come and go.
+
+
 
 After creating the service, verify how Kubernetes automatically links **Pods to the Service** using **labels**.
 

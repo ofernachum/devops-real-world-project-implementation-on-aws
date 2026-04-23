@@ -1,17 +1,27 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog-mysql
+  
+  # Name of the Service. This is the name that will be used to refer to this service within the cluster. It should match the serviceName specified in the StatefulSet. 
+  name: catalog-mysql  
   labels:
     app.kubernetes.io/name: catalog
     app.kubernetes.io/instance: catalog
     app.kubernetes.io/component: mysql
     app.kubernetes.io/owner: retail-store-sample
 spec:
-  clusterIP: None   # Headless service
+  ##################################################################################
+   # Sets this service as a Headless service ! This allows  access by stable dns names
+   # (e.g. catalog-mysql-0.catalog-mysql) to the individual pods in the StatefulSet,
+   # rather than load-balancing across them. This is essential for StatefulSets to
+   # provide stable network identities to the pods:
+  clusterIP: None  
+  ##################################################################################
+  
+  
   ports:
     - port: 3306
-      targetPort: mysql
+      targetPort: mysql # This should match the port name defined in the StatefulSet's container ports. It tells the service which port to forward traffic to on the pods.
       name: mysql
   selector:
     app.kubernetes.io/name: catalog
