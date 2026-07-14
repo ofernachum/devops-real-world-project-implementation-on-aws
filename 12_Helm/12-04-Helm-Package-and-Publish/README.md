@@ -62,12 +62,14 @@ version: 1.3.1       # Chart version (bump from 1.3.0 to 1.3.1)
 * Create a new template file: **`templates/release-info.yaml`**
 
 ```yaml
+# Create only if releaseInfo.enabled is true in values.yaml:
 {{- if .Values.releaseInfo.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "ui.fullname" . }}-release-info
   labels:
+    # Takes labels from the chart and indents them by 4 spaces:
     {{- include "ui.labels" . | nindent 4 }}
 data:
   chartName: "{{ .Chart.Name }}"

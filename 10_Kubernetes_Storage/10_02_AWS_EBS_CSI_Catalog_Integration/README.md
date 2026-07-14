@@ -138,6 +138,8 @@ kubectl apply -f 02_catalog_k8s_manifests/
 
 Check resources:
 
+This command lists StorageClass, PersistentVolumeClaims (PVCs), PersistentVolumes (PVs), and Pods to verify that the EBS-backed storage is correctly provisioned and attached to the MySQL StatefulSet.
+
 ```bash
 kubectl get sc,pvc,pv,pods
 ```

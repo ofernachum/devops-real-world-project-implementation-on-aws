@@ -76,6 +76,7 @@ spec:
               echo "Starting Catalog service with secure DB credentials";
               exec /app/main
       volumes:
+        # Volume to mount the AWS Secrets Manager secrets:
         - name: aws-secrets
           csi:
             driver: secrets-store.csi.k8s.io

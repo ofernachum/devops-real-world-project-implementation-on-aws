@@ -38,25 +38,37 @@ spec:
               value: my-secret-pw
             - name: MYSQL_DATABASE
               value: catalogdb
+          ####################################################################################################
+          # The following command and args are used to load the secrets from AWS
+          # Secrets Manager into environment variables before starting the MySQL server.
+          # The aws-secrets volume will create a file for each secret defined in the
+          # SecretProviderClass, and the command reads those files to set the environment variables for MySQL:
+
           command: ["/bin/bash", "-c"]
           args:
             - |
               export MYSQL_USER=$(cat /mnt/secrets-store/MYSQL_USER);
               export MYSQL_PASSWORD=$(cat /mnt/secrets-store/MYSQL_PASSWORD);
               echo "Loaded secrets from AWS Secrets Manager. Starting MySQL with user=$MYSQL_USER";
-              exec docker-entrypoint.sh mysqld          
+              exec docker-entrypoint.sh mysqld   
+
+          #####################################################################################################
+                 
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql
             - name: aws-secrets
               mountPath: /mnt/secrets-store
               readOnly: true              
+      
+      
+      # Volume to mount the MySQL data and the AWS Secrets Manager secrets:
       volumes:
         - name: data
           emptyDir: {}
         - name: aws-secrets
           csi:
-            driver: secrets-store.csi.k8s.io
+            driver: secrets-store.csi.k8s.io # The CSI driver that will mount the secrets from AWS Secrets Manager into the pod.
             readOnly: true
             volumeAttributes:
-              secretProviderClass: "catalog-db-secrets"          
+              secretProviderClass: "catalog-db-secrets" # The name of the SecretProviderClass that defines how to retrieve secrets from AWS.          

@@ -1,9 +1,19 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: catalog-mysql-sa
+  # The ServiceAccount is used to provide an identity for the MySQL application running in the Kubernetes cluster. 
+  #It allows the application to authenticate and access resources securely, such as secrets from AWS Secrets Manager,
+  # without hardcoding credentials in the application code. By using a ServiceAccount, we can leverage Kubernetes' 
+  #RBAC (Role-Based Access Control) to grant the necessary permissions for the MySQL application to access the secrets
+  # it needs to function properly, while keeping sensitive information secure and manageable. 
+
+  name: catalog-mysql-sa # This name should be the same as used when creating the POD Identity Association and the StatefulSet service account ! 
+  
+  
   labels:
     app.kubernetes.io/name: catalog
     app.kubernetes.io/instance: catalog
     app.kubernetes.io/component: service
     app.kubernetes.io/owner: retail-store-sample
+
+

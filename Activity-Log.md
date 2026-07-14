@@ -532,19 +532,272 @@
 
 ### Steps:
 
+1. Install the Pod Identity agent in the cluster using the following command:
+
+    ```bash
+    # Option 1: Install using kubectl:
+    
+    kubectl apply -f https://raw.githubusercontent.com/aws/amazon-eks-pod-identity-webhook/master/deploy/manifest.yaml
+
+    # Option 2: in AWS Console, go to EKS > Add-ons > Create add-on > Select "Amazon EKS Pod Identity Agent" from the list and follow the prompts to install it in your cluster.
+    # Select all the defaults and click "Create" to install the add-on in your cluster.
+    # Wait for it to turn from "Creating" to "Active" status before proceeding to the next step.
+
+    ```
+
+2. Verify that the Pod Identity agent is running in the cluster:  
+
+    ```bash
+    # Get the DaemonSet created for the Pod Identity agent: 
+    kubectl get daemonset -n kube-system | grep pod-identity
+
+    # Expected output:
+
+    em
+    NAME                     DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+    aws-node                 2         2         2       2            2           <none>          15d
+    eks-pod-identity-agent   2         2         2       2            2           <none>          11m
+    kube-proxy               2         2         2       2            2           <none>          15d
+    
+    # Get the pods:
+    kubectl get pods -n kube-system | grep pod-identity
+
+    
+
+    ```
+3. Install AWS CLI Pod without assosiating with pod identity and verify that it cannot access AWS services:
+
+    ```bash
+    # Deploy the manifests in: 09_Kubernetes_Secrets/09_02_EKS_Pod_Identity_Agent/kube-manifests:
+    kubectl apply -f 09_Kubernetes_Secrets/09_02_EKS_Pod_Identity_Agent/kube-manifests
+
+    # Verify that the pod is running:
+    kubectl get pods -n aws-cli
+
+
+
+    ```
+
+4. Connect to the CLI Pod and try to list S3 buckets in the account:
+
+    ```bash
+    kubectl exec -it -n aws-cli -- aws s3 ls
+
+    # Expected output: 
+    aws: [ERROR]: An error occurred (NoCredentials): Unable to locate credentials. You can configure credentials by running "aws login".
+    command terminated with exit code 253
+
+
+    ```
+
+5. Create Pod Identity role and associate it with the CLI Pod:
+
+   
+    In AWS Console:
+
+    **A)** Go to IAM > Roles > Create Role > Select Entity - AWS Service**
+    
+   
+    ![alt text](image.png)
+
+    Click Next
+
+    **B)** In the permissions section search for "AmazonS3ReadOnlyAccess" and select it, then click Next.
+
+
+    **C)** Give the role a name: EKS-Pod-Identity-S3-ReadOnly-Role-101 and click Create Role.
+
+    **D)** Go to EKS > sandbox-1-eks-cluster > Access > Pod Identity Association > Create Pod Identity Association:
+
+    **E)** Select the AIM role created above (EKS-Pod-Identity-S3-ReadOnly-Role-101) and select the CLI pod (aws-cli-pod) to associate it with, then click Create.
+
+    **F)** Select Namespace = default
+
+    **G)** Select the Service Account created above (part of manifes)
+
+    **H)** Click Create to create the association.
+
+6. Test again:
+
+    ```bash
+    # Delete the CLI pod to allow it to be recreated with the associated IAM role:
+    kubectl delete pod aws-cli-pod -n aws-cli
+    
+    # Deploy the pod again:
+    kubectl apply -f 09_Kubernetes_Secrets/09_02_EKS_Pod_Identity_Agent/kube-manifests
+
+    # Connect to the CLI Pod and try to list S3 buckets in the account again:
+    kubectl exec -it -n aws-cli -- aws s3 ls
+
+    # Expected output: List of S3 buckets in the account, proving that the pod can now access AWS services using the associated IAM role.
+
+    ```
+
+7. clean up:
+
+    ```bash
+    # Delete the CLI pod:
+    kubectl delete -f 09_Kubernetes_Secrets/09_02_EKS_Pod_Identity_Agent/kube-manifests
+
+    # Delete the Pod Identity Association in EKS Console
+
+    # Delete the IAM Role created for Pod Identity in IAM Console
+
+    ```
+   
 
 
 
 
 
-
-## XXXX:
+## Installing Secrets Store CSI Driver and ASCP (AWS Secrets and Configuration Provider):
 
 ### Usecases:
 
+1. The Secrets Store CSI Driver allows Kubernetes applications to securely access secrets stored in external secret management systems (e.g., AWS Secrets Manager, HashiCorp Vault) by mounting them as volumes inside pods.
+
+2. The AWS Secrets and Configuration Provider (ASCP) is a component of the Secrets Store CSI Driver that enables integration with AWS Secrets Manager, allowing Kubernetes applications running on EKS to retrieve secrets from AWS Secrets Manager and use them as environment variables or configuration files.
+
+![alt text](image-1.png)
+
 ### Prerequisites:
 
+1. sandbox-1-eks-cluster running in eu-west-1 region
+2. kubectl installed and configured to point to your cluster
+3. helm installed and configured to use with your cluster
+
+
+
 ### Steps:
+
+1. Verify hemp is installed and configured correctly:
+
+    ```bash
+    helm version
+
+    # If not installed - install using the following commands (Disable Zscaler):
+
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    
+    chmod 700 get_helm.sh
+    
+    ./get_helm.sh
+
+    ```
+
+2. Add the following helm repositories:
+
+    ```bash
+    helm repo add secrets-store-csi-driver https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
+    helm repo add aws-secrets-manager https://aws.github.io/secrets-store-csi-driver-provider-aws
+    helm repo update
+
+    # Verify:
+
+    helm repo list
+
+    # Expected results:
+
+    NAME                            URL                                                              
+    secrets-store-csi-driver        https://kubernetes-sigs.github.io/secrets-store-csi-driver/charts
+    aws-secrets-manager             https://aws.github.io/secrets-store-csi-driver-provider-aws    
+
+    ```
+
+3. Install the Secrets Store CSI Driver using Helm:
+
+    ```bash
+        
+    # Install the Secrets Store CSI Driver in the kube-system namespace:
+    helm install csi-secrets-store \
+    secrets-store-csi-driver/secrets-store-csi-driver \
+    --namespace kube-system
+
+    # List all Helm releases across namespaces:
+    helm list --all-namespaces
+
+    # List releases only in the kube-system namespace:
+    helm list -n kube-system
+
+    # Verify installation status, pods, and resources created by the release:
+    helm status csi-secrets-store -n kube-system
+
+
+    # Verify pods:
+    kubectl get pods -n kube-system -l app=secrets-store-csi-driver
+
+
+    # Verify the daemonset created for the CSI driver.
+    # Note: The Secrets Store CSI Driver is typically deployed as a DaemonSet, which ensures that an instance of the driver runs on each node in the cluster to provide access to secrets for pods running on those nodes:
+
+    kubectl get daemonset -n kube-system -l app=secrets-store-csi-driver
+
+    ```
+4. Install the AWS Secrets and Configuration Provider (ASCP):
+
+    ```bash
+    
+    # Install the ASCP provider in the kube-system namespace:
+    helm install secrets-provider-aws \
+        aws-secrets-manager/secrets-store-csi-driver-provider-aws \
+        --namespace kube-system \
+        --set secrets-store-csi-driver.install=false
+
+    
+
+    # List releases only in the kube-system namespace:
+    helm list -n kube-system
+
+    # You should see 2 releases now: one for the Secrets Store CSI Driver and one for the AWS Secrets Manager provider.
+
+    # Verify installation status, pods, and resources created by the release:
+    helm status secrets-provider-aws -n kube-system
+
+    # Verify pods and daemonsets created for the ASCP provider:
+    kubectl get pods -n kube-system -l app=secrets-provider-aws 
+    kubectl get daemonset -n kube-system -l app=secrets-provider-aws
+
+    ```
+
+5. Create Reusable Terrafrom modeule for creating POD Association components that allows access to AWS Secrets Manager secrets via the ASCP provider:
+
+     [Link to Module Code](https://github.com/SKF-Internal/compassai-sandbox-1/tree/main/terraform/modules/secret_pod_identity_association)
+
+    Create a Terraform module that includes:
+
+    * Create Secret in AWS Secrets Manager with the necessary permissions for the application to access it:
+    ```bash
+
+        # NOTE: I created this as hardcoded terrafrom resource in base module !
+
+        aws secretsmanager create-secret \
+        --name catalog-db-secret-1 \
+        --region $AWS_REGION \
+        --description "MySQL credentials for Catalog microservice" \
+        --secret-string '{
+            "MYSQL_USER": "mydbadmin",
+            "MYSQL_PASSWORD": "kalyandb101"
+        }'
+    ```
+   
+    *  Create an IAM policy allowing Pods to read a specific AWS secret.
+    *  Create an IAM role trusted by the **EKS Pod Identity Agent**.
+    *  Attach the policy to the role.
+    *  Associate that IAM role with the **Kubernetes ServiceAccount** (`catalog-mysql-sa`).
+    *  Verify the Pod Identity association.
+
+    This module can then be reused to create multiple associations for different applications and secrets by providing different input variables (e.g., secret names, service account names, etc.)
+
+    * Deploy the module !
+
+
+6. 
+
+
+
+
+
+
 
 
 ## XXXX:

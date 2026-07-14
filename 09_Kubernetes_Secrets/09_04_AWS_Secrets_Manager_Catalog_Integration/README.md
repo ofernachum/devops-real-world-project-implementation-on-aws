@@ -328,8 +328,19 @@ spec:
 # First: Deploy Secret Provider Class
 kubectl apply -f 01_secretproviderclass
 
+# Verify SecretProviderClass:
+kubectl get secretproviderclass
+kubectl describe secretproviderclass catalog-db-secrets
+
 # Second: Deploy all our Catalog k8s Manifests
 kubectl apply -f 02_catalog_k8s_manifests
+
+# Verify:
+
+kubectl get serviceaccount catalog-mysql-sa
+kubectl get statefulset catalog-mysql
+kubectl get deployment catalog
+
 ```
 
 ---

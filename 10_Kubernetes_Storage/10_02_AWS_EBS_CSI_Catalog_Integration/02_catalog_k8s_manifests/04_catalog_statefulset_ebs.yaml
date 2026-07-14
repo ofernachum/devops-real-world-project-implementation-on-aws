@@ -28,7 +28,7 @@ spec:
       containers:
         - name: mysql
           image: "public.ecr.aws/docker/library/mysql:8.0"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: IfNotPresent 
           ports:
             - name: mysql
               containerPort: 3306
