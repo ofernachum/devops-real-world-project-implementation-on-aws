@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: ui
-  namespace: argocd
+  namespace: argocd # The namespace where ArgoCD is installed. This is the namespace where the Application CRD will be created.
 spec:
   project: default
   source:
@@ -13,11 +13,11 @@ spec:
       valueFiles:
         - values-ui.yaml
   destination:
-    server: https://kubernetes.default.svc
-    namespace: default
+    server: https://kubernetes.default.svc # Means the cluster where ArgoCD is running
+    namespace: default # The namespace where the application will be deployed
   syncPolicy:
     automated:
       prune: true    # Auto-delete resources not in Git
       selfHeal: true # Auto-sync if drift detected
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=true # Will create the namespace if it does not exist
