@@ -1,10 +1,16 @@
 # Datasource: To get default EKS addon version compatible with EKS cluster version
+# This will return the AWS recommended default version of the addon for 
+# the EKS cluster's Kubernetes version:
 data "aws_eks_addon_version" "pia_default" {
   addon_name         = "eks-pod-identity-agent"
   kubernetes_version = aws_eks_cluster.main.version
 }
 
 # Datasource: To get latest EKS addon version compatible with EKS cluster version
+# This will return the latest available version of the addon for 
+# the EKS cluster's Kubernetes version (This is the one actually used below in
+# the aws_eks_addon resource):
+
 data "aws_eks_addon_version" "pia_latest" {
   addon_name         = "eks-pod-identity-agent"
   kubernetes_version = aws_eks_cluster.main.version
@@ -13,13 +19,18 @@ data "aws_eks_addon_version" "pia_latest" {
 
 # EKS Addon: Pod Identity Agent
 resource "aws_eks_addon" "podidentity" {
-  depends_on = [aws_eks_node_group.private_nodes]   
-  cluster_name                = aws_eks_cluster.main.id
-  addon_name                  = "eks-pod-identity-agent"
+  depends_on   = [aws_eks_node_group.private_nodes]
+  cluster_name = aws_eks_cluster.main.id
+  addon_name   = "eks-pod-identity-agent"
+
+  # This will overwrite any existing PIA installation or configuration
+  # For example - if installed manually or via Helm chart, 
+  # this will overwrite it with the EKS addon version specified below
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
+
   # Use the latest EKS addon version compatible with the cluster's Kubernetes version
-  addon_version               = data.aws_eks_addon_version.pia_latest.version
+  addon_version = data.aws_eks_addon_version.pia_latest.version
 }
 
 
@@ -33,7 +44,7 @@ output "pod_identity_agent_eksaddon_lastest_version" {
 }
 output "pod_identity_agent_eksaddon_arn" {
   value = aws_eks_addon.podidentity.arn
-}  
+}
 
 output "pod_identity_agent_eksaddon_id" {
   value = aws_eks_addon.podidentity.id
