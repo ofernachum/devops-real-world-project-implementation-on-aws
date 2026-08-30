@@ -1,6 +1,8 @@
 # Resource: Create IAM Role for EBS CSI Driver
 resource "aws_iam_role" "ebs_csi_iam_role" {
   name = "${local.name}-ebs-csi-iam-role"
+  # This is the assume role policy for the EBS CSI Driver IAM Role
+  # defined in file c13-podidentity-assumerole.tf above.
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 
   tags = {

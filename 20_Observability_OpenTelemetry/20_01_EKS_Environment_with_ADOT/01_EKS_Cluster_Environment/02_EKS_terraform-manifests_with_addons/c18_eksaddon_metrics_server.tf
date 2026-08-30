@@ -11,7 +11,10 @@ data "aws_eks_addon_version" "metrics_server_latest" {
   most_recent        = true
 }
 
-# EKS Addon: Pod Identity Agent
+# EKS Addon: Metrics Server.
+# This addon deploys the Kubernetes Metrics Server, which collects resource metrics
+# from Kubelets and exposes them via the Metrics API.
+
 resource "aws_eks_addon" "metrics_server" {
   depends_on = [aws_eks_node_group.private_nodes]  
   cluster_name                = aws_eks_cluster.main.id

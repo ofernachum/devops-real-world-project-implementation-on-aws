@@ -5,18 +5,20 @@ resource "helm_release" "loadbalancer_controller" {
     aws_eks_node_group.private_nodes,
     aws_eks_pod_identity_association.lbc,
     aws_eks_addon.podidentity
-    ]        
+  ]
 
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  namespace = "kube-system" 
+  namespace  = "kube-system"
   # version  = "1.13.0"         # Recommended in prod, if not specified always uses latest version   
 
-  wait            = true         # Wait for resources to become Ready
+  wait            = true # Wait for resources to become Ready
   timeout         = 600
-  cleanup_on_fail = true 
+  cleanup_on_fail = true
 
+  # Passing configuration flags to a Helm chart during installation like running
+  # helm install aws-load-balancer-controller eks/aws-load-balancer-controller --set clusterName=eks-cluster-name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=us-west-2 --set vpcId=vpc-xxxxxx  
   set = [
     # Create Service Account via Helm   
     {
@@ -42,15 +44,15 @@ resource "helm_release" "loadbalancer_controller" {
     {
       name  = "region"
       value = "${var.aws_region}"
-    }     
-  ]       
+    }
+  ]
 }
 
 
 # Helm Release Outputs
 output "helm_lbc_metadata" {
   description = "Metadata Block outlining status of the deployed release."
-  value = helm_release.loadbalancer_controller.metadata
+  value       = helm_release.loadbalancer_controller.metadata
 }
 
 

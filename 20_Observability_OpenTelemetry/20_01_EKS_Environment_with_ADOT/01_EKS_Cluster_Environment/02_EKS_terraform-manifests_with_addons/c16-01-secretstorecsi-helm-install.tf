@@ -1,3 +1,8 @@
+# That chart installs the Secrets Store CSI Driver, a Kubernetes SIGs project.
+# CSI means Container Storage Interface. It is a Kubernetes plugin standard 
+# that lets external storage-like systems mount data into pods. In this case, 
+# the “storage” is secret data.
+
 # Install Secrets Store CSI Driver (Kubernetes SIGs)
 resource "helm_release" "secrets_store_csi_driver" {
   depends_on = [
@@ -15,7 +20,7 @@ resource "helm_release" "secrets_store_csi_driver" {
       name  = "syncSecret.enabled"
       value = "true"
     },
-  ]    
+  ]
 
   # Wait until all pods are ready
   wait            = true

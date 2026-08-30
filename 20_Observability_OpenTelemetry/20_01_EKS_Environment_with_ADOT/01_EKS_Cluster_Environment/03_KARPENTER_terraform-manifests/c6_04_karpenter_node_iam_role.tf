@@ -1,3 +1,7 @@
+# This file defines the IAM role and policies for Karpenter nodes in the EKS cluster.
+# This role will allow the nodes launched by Karpenter to interact with AWS services.
+
+
 data "aws_iam_policy_document" "node_assume" {
   statement {
     actions = ["sts:AssumeRole"]
