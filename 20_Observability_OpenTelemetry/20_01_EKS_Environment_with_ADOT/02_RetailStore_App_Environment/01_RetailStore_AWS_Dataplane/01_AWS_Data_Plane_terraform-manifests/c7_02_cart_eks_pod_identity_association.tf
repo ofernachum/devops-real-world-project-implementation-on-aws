@@ -11,3 +11,4 @@ output "cart_dynamodb_pod_identity_association_arn" {
   description = "Pod Identity Association ARN for Cart DynamoDB ServiceAccount"
   value       = aws_eks_pod_identity_association.cart_pod_identity.association_arn
 }
+

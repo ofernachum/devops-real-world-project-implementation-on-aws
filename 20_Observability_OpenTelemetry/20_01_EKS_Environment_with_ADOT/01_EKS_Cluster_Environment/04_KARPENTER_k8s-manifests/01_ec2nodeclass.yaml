@@ -1,3 +1,8 @@
+# EC2NodeClass is like a template for EC2 instances that Karpenter will launch.
+# It defines the AMI family, IAM role, subnets, security groups, and other
+# configurations for the nodes. This manifest is applied to the EKS cluster
+# to enable Karpenter to provision nodes according to these specifications.
+
 apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
 metadata:
@@ -7,9 +12,11 @@ spec:
   amiFamily: AL2023
   amiSelectorTerms:
     - alias: al2023@latest
-  # Node IAM role created in Terraform
+  # Node IAM role created in Terraform under the file c6_04_karpenter_node_iam_role.tf
   role: "arn:aws:iam::180789647333:role/retail-dev-karpenter-node-role"
   # Auto-discover subnets (your cluster tags)
+  # Those tags were defined in the Terraform file c1_01_eks_cluster.tf when creating
+  # the EKS cluster.
   subnetSelectorTerms:
     - tags:
         kubernetes.io/cluster/retail-dev-eksdemo1: owned
@@ -22,6 +29,7 @@ spec:
   tags:
     karpenter.sh/discovery: retail-dev-eksdemo1
   # Recommended EBS configuration
+  # Each Karpenter-created node gets a 20 GiB encrypted gp3 root volume.
   blockDeviceMappings:
     - deviceName: /dev/xvda
       ebs:
@@ -29,10 +37,16 @@ spec:
         volumeType: gp3
         encrypted: true
         deleteOnTermination: true
+
   # Recommended IMDS Metadata options
+  # MDS stands for Instance Metadata Service. It is a special service
+  # available from inside an EC2 instance at a local address, 
+  #usually 169.254.169.254. The instance can use it to get information
+  # about itself, such as its instance ID, region, availability zone,
+  # private IP address, IAM role credentials, and other AWS metadata.
   metadataOptions:
-    httpTokens: required
-    httpPutResponseHopLimit: 2
+    httpTokens: required # Require IMDSv2 for enhanced security
+    httpPutResponseHopLimit: 2 # Limit the number of network hops for IMDS requests to 2, which is a security best practice.
 
 
   # -------------------------------------------------------------------

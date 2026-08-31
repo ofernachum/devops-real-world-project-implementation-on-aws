@@ -1,11 +1,24 @@
 # Use existing AWS Secrets Manager Secret (already created manually)
+
+# Lookup the existing secret in AWS Secrets Manager:
 data "aws_secretsmanager_secret" "retailstore_secret" {
   name = "retailstore-db-secret-1"
 }
 
+
+# This tells Terraform: “Now that you found the secret named 
+# retailstore-db-secret-1, fetch its current version and read 
+#the secret string stored inside it.”:
 data "aws_secretsmanager_secret_version" "retailstore_secret_value" {
   secret_id = data.aws_secretsmanager_secret.retailstore_secret.id
 }
+
+# This block decodes the JSON string retrieved from AWS Secrets Manager 
+#into a local Terraform variable that looks like this: 
+# {
+#   "username": "your-db-username",
+#   "password": "your-db-password"
+# }
 
 locals {
   retailstore_secret_json = jsondecode(data.aws_secretsmanager_secret_version.retailstore_secret_value.secret_string)

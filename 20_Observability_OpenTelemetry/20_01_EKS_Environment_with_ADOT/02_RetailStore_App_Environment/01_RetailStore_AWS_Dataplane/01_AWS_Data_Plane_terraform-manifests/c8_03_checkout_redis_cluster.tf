@@ -17,3 +17,6 @@ resource "aws_elasticache_cluster" "checkout_redis" {
 output "checkout_redis_endpoint" {
   value = aws_elasticache_cluster.checkout_redis.cache_nodes[0].address
 }
+
+
+

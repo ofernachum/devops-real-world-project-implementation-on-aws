@@ -25,7 +25,7 @@ resource "aws_iam_policy" "cart_dynamodb_policy" {
           "dynamodb:ListTables",
           "dynamodb:ListTagsOfResource"
         ]
-        Resource = "*"  # Full access to all DynamoDB resources in all regions
+        Resource = "*" # Full access to all DynamoDB resources in all regions
       }
     ]
   })
@@ -60,3 +60,4 @@ output "cart_dynamodb_role_arn" {
   description = "IAM Role ARN for Cart microservice Pod Identity"
   value       = aws_iam_role.cart_dynamodb_role.arn
 }
+

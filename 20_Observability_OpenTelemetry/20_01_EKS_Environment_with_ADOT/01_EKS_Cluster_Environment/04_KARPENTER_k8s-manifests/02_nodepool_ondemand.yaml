@@ -9,9 +9,21 @@ spec:
         group: karpenter.k8s.aws
         kind: EC2NodeClass
         name: default-ec2nodeclass
+      
       # No taints for now (you can add later)
+      # Taints are used to repel certain pods from being scheduled on this node.
+      # For a pod to be scheduled on a tainted node, it must have a matching
+      # toleration which is defined as part of the pod's spec. 
+      #Taints and tolerations are a way to control pod placement on nodes.
       taints: []
+      
+      # startupTaints are applied to the node during its startup phase. 
+      #They can be used to prevent pods from being scheduled on the node
+      # until it is fully initialized and ready to accept workloads.
+      # Once the node is ready, the startup taints are removed, allowing pods
+      # to be scheduled on it:
       startupTaints: []
+      
       # Node selection logic
       requirements:
         - key: kubernetes.io/arch
@@ -33,7 +45,7 @@ spec:
         - key: karpenter.k8s.aws/instance-size
           operator: In
           #values: ["micro", "small", "medium", "large"]  # Caps at t3.medium (2 vCPU, 4GB RAM)
-          values: ["medium", "large"]  # Caps at t3.medium (2 vCPU, 4GB RAM)
+          values: ["medium", "large"]  # Caps at t3.large (2 vCPU, 8GB RAM)
         # Must match the AZs where your EKS cluster has subnets configured
         # Karpenter can only launch nodes in AZs with configured VPC subnets
         - key: topology.kubernetes.io/zone
@@ -43,6 +55,8 @@ spec:
   limits:
     cpu: "50"
   # Recommended disruption settings
+  # this disruption block tells Karpenter when it is allowed to replace or
+  # remove nodes to reduce waste and optimize cost.
   disruption:
     consolidationPolicy: WhenEmptyOrUnderutilized
     consolidateAfter: 30s  # How long to wait before consolidating
