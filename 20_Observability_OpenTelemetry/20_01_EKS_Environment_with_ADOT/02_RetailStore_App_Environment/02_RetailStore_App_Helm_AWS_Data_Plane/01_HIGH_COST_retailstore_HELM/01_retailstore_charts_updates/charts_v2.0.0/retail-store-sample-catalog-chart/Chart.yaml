@@ -1,8 +1,9 @@
 apiVersion: v2
 name: retail-store-sample-catalog-chart
 description: Catalog Microservice - Modified Helm chart for AWS EKS course (based on aws-containers/retail-store-sample-app)
-type: application
-version: 2.0.0
-appVersion: 1.3.0
-sources:
+type: application # This can be also 'library' for Helm library charts that do not deploy any resources but provide reusable templates
+version: 2.0.0 # The helm chart version - important for Helm to manage chart upgrades correctly !
+appVersion: 1.3.0 # Informational only - version of the Docker image used by the application
+sources: # s metadata only; Helm does not use it to install or render the chart.
   - https://github.com/aws-containers/retail-store-sample-app
+

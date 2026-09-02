@@ -1,7 +1,6 @@
 {{/* vim: set filetype=mustache: */}}
-{{/*
-Expand the name of the chart.
-*/}}
+
+{{/* Expand the name of the chart. */}}
 {{- define "catalog.name" -}}
 {{- default "catalog" .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
@@ -11,6 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
+
 {{- define "catalog.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
@@ -24,24 +24,12 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
+{{/* Create chart name and version as used by the chart label. */}}
+{{/* This adds something like helm.sh/chart: catalog-2.0.0 label to resources metadata */}}
 {{- define "catalog.chart" -}}
 {{- printf "%s-%s" "catalog" .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Common labels
-*/}}
-{{- define "catalog.labels" -}}
-helm.sh/chart: {{ include "catalog.chart" . }}
-{{ include "catalog.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
 
 {{/*
 Selector labels
@@ -52,6 +40,20 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: service
 app.kubernetes.io/owner: retail-store-sample
 {{- end }}
+
+
+
+{{/* Common labels */}}
+{{- define "catalog.labels" -}}
+helm.sh/chart: {{ include "catalog.chart" . }}
+{{ include "catalog.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+
 
 {{/*
 Create the name of the service account to use
