@@ -14,11 +14,11 @@ spec:
       # Taints are used to repel certain pods from being scheduled on this node.
       # For a pod to be scheduled on a tainted node, it must have a matching
       # toleration which is defined as part of the pod's spec. 
-      #Taints and tolerations are a way to control pod placement on nodes.
+      # Taints and tolerations are a way to control pod placement on nodes.
       taints: []
       
       # startupTaints are applied to the node during its startup phase. 
-      #They can be used to prevent pods from being scheduled on the node
+      # They can be used to prevent pods from being scheduled on the node
       # until it is fully initialized and ready to accept workloads.
       # Once the node is ready, the startup taints are removed, allowing pods
       # to be scheduled on it:

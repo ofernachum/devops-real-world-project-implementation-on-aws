@@ -7,9 +7,11 @@ metadata:
     {{- include "catalog.labels" . | nindent 4 }}
 spec:
   {{- if .Values.podDisruptionBudget.minAvailable }}
+  # At least ## catalog pod must stay available during voluntary disruptions.
   minAvailable: {{ .Values.podDisruptionBudget.minAvailable }} 
   {{- end }}
   {{- if .Values.podDisruptionBudget.maxUnavailable }}
+  # During voluntary disruptions, at most ## catalog pod can be unavailable.
   maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
   {{- end }}
   selector:

@@ -66,10 +66,10 @@ nodeSelector:
 # Distribute pods across nodes AND availability zones for high availability
 topologySpreadConstraints:
   # Spread across nodes (within same AZ) - Best effort
-  - maxSkew: 1
-    topologyKey: kubernetes.io/hostname
-    whenUnsatisfiable: ScheduleAnyway
-    labelSelector:
+  - maxSkew: 1 # Difference between the number of pods in each node can be at most 1
+    topologyKey: kubernetes.io/hostname # Distribute eavenly across all nodes.
+    whenUnsatisfiable: ScheduleAnyway # If cant - schedule anyway
+    labelSelector: # Defines which pods this topology spread constraint applies to
       matchLabels:
         app.kubernetes.io/name: catalog
         app.kubernetes.io/component: service

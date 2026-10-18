@@ -7,6 +7,8 @@ metadata:
     {{- include "catalog.mysql.labels" . | nindent 4 }}
 spec:
   replicas: 1
+
+  # This is the name of the headless service that governs this StatefulSet:
   serviceName: {{ include "catalog.mysql.fullname" . }}
   selector:
     matchLabels:
